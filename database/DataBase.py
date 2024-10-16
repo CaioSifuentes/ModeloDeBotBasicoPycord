@@ -1,17 +1,16 @@
-from json import load
+import json, os
 import firebase_admin
 from firebase_admin import db
 from firebase_admin import credentials
-from app.utilities.configreader import ConfigReader
+from utilities.configreader import ConfigReader
 
 
 class DataBase:
-    if ConfigReader.get_mode():
-        with open('database/DataBaseConfig-dev.json', 'r') as dbConfig:
-            serviceAccountKey, databaseOptions = load(dbConfig)
-    else:
-        with open('database/DataBaseConfig.json', 'r') as dbConfig:
-            serviceAccountKey, databaseOptions = load(dbConfig)
+    file_name = 'db-dev.json' if ConfigReader.get_config else 'db-prod.json'
+    db_file = os.path.join(os.path.dirname(__file__), file_name)
+
+    with open(db_file, 'r') as dbConfig:
+        serviceAccountKey, databaseOptions = json.load(dbConfig)
 
     try:
         appCredential = credentials.Certificate(serviceAccountKey)
